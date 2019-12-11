@@ -11,6 +11,7 @@ describe('ShoppingListService', () => {
       name: 'First test item!',
       date_added: new Date('2029-01-22T16:28:32.615Z'),
       price: '12.00',
+      checked: false,
       category: 'Main'
     },
     {
@@ -18,6 +19,7 @@ describe('ShoppingListService', () => {
       name: 'Second test item!',
       date_added: new Date('2100-05-22T16:28:32.615Z'),
       price: '21.00',
+      checked: false,
       category: 'Snack'
     },
     {
@@ -25,6 +27,7 @@ describe('ShoppingListService', () => {
       name: 'Third test item!',
       date_added: new Date('1919-12-22T16:28:32.615Z'),
       price: '3.00',
+      checked: false,
       category: 'Lunch'
     },
     {
@@ -32,6 +35,7 @@ describe('ShoppingListService', () => {
       name: 'Third test item!',
       date_added: new Date('1919-12-22T16:28:32.615Z'),
       price: '0.99',
+      checked: false,
       category: 'Breakfast'
     },
   ];
@@ -62,7 +66,7 @@ describe('ShoppingListService', () => {
         });
     });
 
-    it('should return 3 items when 3 items present in db', () => {
+    it('should return 4 items when 4 items present in db', () => {
       return db('shopping_list')
         .insert(testItems)
         .then( () => {
@@ -95,5 +99,68 @@ describe('ShoppingListService', () => {
         });
     });
   });
+
+  describe('getById()', () => {
+    it('should find the item with a given id of 2 and return that item from the test array', () => {
+      return ShoppingListService.getAllItems(db)
+        .insert(testItems)
+        .then(() => {
+          const findId = 2;
+          const foundItem = testItems[findId - 1];
+          return ShoppingListService.getById(db, findId)
+            .then(res => 
+              expect(res).to.eql({
+                id: findId,
+                name: foundItem.name,
+                price: foundItem.price,
+                date_added: foundItem.date_added,
+                checked: foundItem.checked,
+                category: foundItem.category
+              })
+            );
+        });
+    });
+  });
+
+  describe('deleteItem()', () => {
+    it('should remove the item of the given id from the list', () => {
+      return ShoppingListService.getAllItems(db)
+        .insert(testItems)
+        .then(() => {
+          const givenId = 4;
+          return ShoppingListService.deleteItem(db, givenId)
+            .then(() => ShoppingListService.getAllItems(db))
+            .then(items => {
+              const expected = testItems
+                .filter(item => item.id !== givenId);
+              expect(items).to.eql(expected);
+            });
+        });
+    });
+  });
+
+  describe('updateItem()', () => {
+    it('should replace an item from the shopping_list with new given data', () => {
+      return ShoppingListService.getAllItems(db)
+        .insert(testItems)
+        .then(() => {
+          const updateId = 4;
+          const replacement = {
+            id: updateId,
+            name: 'ReplacementData',
+            date_added: new Date(),
+            price: '1000.99',
+            checked: false,
+            category: 'Main'
+          };
+          return ShoppingListService.updateItem(db, updateId, replacement)
+            .then(() => ShoppingListService.getById(db, updateId))
+            .then(item => {
+              expect(item).to.eql(replacement);
+            });
+        });
+    });
+  });
+  
 })
 ;

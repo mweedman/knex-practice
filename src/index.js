@@ -1,6 +1,6 @@
 require('dotenv').config();
 const knex = require('knex');
-const ShoppingListService = require('./shopping-list-sevice');
+const ShoppingListService = require('./shopping-list-service');
 
 const db = knex({
   client: 'pg',
