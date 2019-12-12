@@ -40,8 +40,6 @@ describe('ShoppingListService', () => {
     },
   ];
 
-
-
   before('setup database', () => {
     db = knex({
       client: 'pg',
@@ -161,6 +159,5 @@ describe('ShoppingListService', () => {
         });
     });
   });
-  
-})
-;
+
+});
